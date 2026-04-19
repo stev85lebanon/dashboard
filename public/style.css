@@ -171,3 +171,18 @@ button:hover {
     text-align: center;
     font-weight: bold;
 }
+
+.leave-btn {
+    float: right;
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: -5px;
+}
+
+.leave-btn:hover {
+    background: #b52a37;
+}

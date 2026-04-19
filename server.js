@@ -81,6 +81,21 @@ io.on("connection", async (socket) => {
     socket.on("leaderMessage", (msg) => {
         io.emit("leaderMessage", msg);
     });
+
+    socket.on("disconnectUser", async (name) => {
+        await User.deleteOne({ name });
+
+        const users = await User.find();
+        io.emit("refresh", users);
+    });
+    socket.on("disconnect", async () => {
+        if (socket.userName) {
+            await User.deleteOne({ name: socket.userName });
+
+            const users = await User.find();
+            io.emit("refresh", users);
+        }
+    });
 });
 
 const PORT = process.env.PORT || 3000;
