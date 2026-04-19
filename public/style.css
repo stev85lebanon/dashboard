@@ -1,0 +1,173 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+}
+
+/* HEADER */
+.header {
+    background: #1e2a38;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* LOGIN */
+#login {
+    text-align: center;
+    margin-top: 100px;
+}
+
+#login select,
+#login button {
+    padding: 10px;
+    margin: 10px;
+}
+
+/* LEADER PANEL */
+#leaderPanel {
+    background: #1e2a38;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+#leaderInput {
+    padding: 8px;
+    width: 250px;
+    border-radius: 6px;
+    border: none;
+}
+
+#leaderPanel button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    background: #28a745;
+    color: white;
+    cursor: pointer;
+}
+
+#leaderMessage {
+    margin-top: 10px;
+    background: #ffc107;
+    color: black;
+    padding: 8px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+/* OVERVIEW */
+.overview {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 15px;
+}
+
+.box {
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+}
+
+.available {
+    background: #28a745;
+}
+
+.focused {
+    background: #ffc107;
+    color: black;
+}
+
+.busy {
+    background: #dc3545;
+}
+
+/* GRID */
+#dashboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    padding: 20px;
+}
+
+/* CARD */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* STATUS BADGE */
+.status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin: 8px 0;
+    font-weight: bold;
+}
+
+.status-available {
+    background: #28a745;
+    color: white;
+}
+
+.status-busy {
+    background: #dc3545;
+    color: white;
+}
+
+.status-focused {
+    background: #ffc107;
+    color: black;
+}
+
+.status-in-meeting {
+    background: #007bff;
+    color: white;
+}
+
+/* NOTE */
+.note {
+    font-size: 13px;
+    color: #555;
+    margin: 8px 0;
+}
+
+/* INPUT + SELECT */
+select,
+input {
+    width: 90%;
+    padding: 6px;
+    margin-top: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+/* BUTTONS */
+button {
+    margin-top: 6px;
+    padding: 6px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+#leaderMessage {
+    margin: 10px;
+    padding: 10px;
+    background: #ffc107;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+}
