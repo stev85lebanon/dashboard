@@ -35,7 +35,7 @@ io.on("connection", async (socket) => {
 
     // ✅ LOGIN (ADD THIS)
     socket.on("login", async (data) => {
-
+        socket.userName = data.name;
         let user = await User.findOne({ name: data.name });
 
         if (!user) {

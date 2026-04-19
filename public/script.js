@@ -110,15 +110,7 @@ function render() {
 
         container.appendChild(card);
     });
-    function leave() {
-        socket.emit("disconnectUser", currentUser);
 
-        document.getElementById("app").style.display = "none";
-        document.getElementById("login").style.display = "block";
-    }
-    window.addEventListener("beforeunload", () => {
-        socket.emit("disconnectUser", currentUser);
-    });
     // update overview
     document.getElementById("available").innerText = available;
     document.getElementById("busy").innerText = busy;
@@ -134,7 +126,15 @@ function render() {
 function updateStatus(name, status) {
     socket.emit("updateStatus", { name, status });
 }
+function leave() {
+    socket.emit("disconnectUser", currentUser);
 
+    document.getElementById("app").style.display = "none";
+    document.getElementById("login").style.display = "block";
+}
+window.addEventListener("beforeunload", () => {
+    socket.emit("disconnectUser", currentUser);
+});
 // write note
 function handleNote(e, name) {
     if (e.key === "Enter") {
