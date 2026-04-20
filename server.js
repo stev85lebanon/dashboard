@@ -41,15 +41,15 @@ io.on("connection", async (socket) => {
         socket.userName = data.name;
 
         // 🎯 assign avatar based on name
-        let avatar = "images/default.png";
+        let avatar = "/images/default.png";
 
-        if (data.name === "Amir") avatar = "images/amir.jpg";
-        if (data.name === "Casper") avatar = "images/casper.jpg";
-        if (data.name === "John") avatar = "images/john.jpg";
-        if (data.name === "Lina") avatar = "images/lina.jpg";
-        if (data.name === "Mustafa") avatar = "images/mustafa.jpg";
-        if (data.name === "Sara") avatar = "images/sara.jpg";
-        if (data.name === "Yasin") avatar = "images/yasin.jpg";
+        if (data.name === "Amir") avatar = "/images/amir.jpg";
+        if (data.name === "Casper") avatar = "/images/casper.jpg";
+        if (data.name === "John") avatar = "/images/john.jpg";
+        if (data.name === "Lina") avatar = "/images/lina.jpg";
+        if (data.name === "Mustafa") avatar = "/images/mustafa.jpg";
+        if (data.name === "Sara") avatar = "/images/sara.jpg";
+        if (data.name === "Yasin") avatar = "/images/yasin.jpg";
 
         let user = await User.findOne({ name: data.name });
 

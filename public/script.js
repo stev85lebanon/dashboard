@@ -109,7 +109,7 @@ function render() {
         card.innerHTML = `
   <div class="user-header">
     <div class="avatar">
-      <img src="${p.avatar || 'images/default.png'}" />
+      <img src="${p.avatar || '/images/default.png'}" />
       <span class="dot ${p.online ? "online" : "offline"}"></span>
     </div>
 
