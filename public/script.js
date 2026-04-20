@@ -73,8 +73,7 @@ function render() {
         if (p.status === "Available") available++;
         if (p.status === "Busy") busy++;
         if (p.status === "Focused") focused++;
-        const canEdit = isLeader || p.name === currentUser;
-
+        const canEdit = isLeader || p.name.toLowerCase() === currentUser;
         const statusClass = p.status
             .toLowerCase()
             .replace(/\s+/g, "-");
@@ -109,7 +108,7 @@ function render() {
     </select>
   ` : ""}
 
-  ${p.name === currentUser ? `
+  ${p.name.toLowerCase() === currentUser ? `
     <input placeholder="Write update..."
       onkeydown="handleNote(event, '${p.name}')">
 
