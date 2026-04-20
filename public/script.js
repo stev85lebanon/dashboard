@@ -123,6 +123,7 @@ function render() {
     let focused = 0;
 
     team.forEach((p) => {
+        const isMe = p.name.toLowerCase() === currentUser;
 
         // count overview
         if (p.status === "Available") available++;
@@ -135,8 +136,7 @@ function render() {
         if (p.role === "leader") return;
 
         const card = document.createElement("div");
-        card.className = "card";
-
+        card.className = "card " + (isMe ? "me" : "other");
         card.innerHTML = `
   <div class="user-header">
     <div class="avatar">
@@ -154,7 +154,17 @@ function render() {
   <div class="note-box">
     ${p.note ? p.note : "No update yet..."}
   </div>
+<div class="note-box">
+  ${p.note ? p.note : "No update yet..."}
+</div>
 
+${isMe ? `
+  <div class="my-tasks">
+      ${myTasks.map(t => `
+          <div class="task-mini">📌 ${t.text}</div>
+      `).join("")}
+  </div>
+` : ""}
   ${canEdit ? `
     <select onchange="updateStatus('${p.name}', this.value)">
       ${statuses.map(s =>
