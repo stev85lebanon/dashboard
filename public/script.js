@@ -143,7 +143,10 @@ function render() {
       <span class="dot ${p.online ? "online" : "offline"}"></span>
     </div>
 
-    <h3>${p.name}</h3>
+    <h3>
+      ${p.name}
+      ${isMe ? '<span class="you-badge">YOU</span>' : ''}
+    </h3>
   </div>
 
   <div class="status status-${statusClass}">
@@ -153,28 +156,24 @@ function render() {
   <div class="note-box">
     ${p.note ? p.note : "No update yet..."}
   </div>
-<div class="note-box">
-  ${p.note ? p.note : "No update yet..."}
-</div>
 
-${isMe ? `
-  <input placeholder="Write update..."
-    onkeydown="handleNote(event, '${p.name}')">
+  ${isMe ? `
+    <div class="my-tasks">
+      ${myTasks.map(t => `
+        <div class="task-mini">📌 ${t.text}</div>
+      `).join("")}
+    </div>
+  ` : ""}
 
-  <div class="actions">
-    <button class="help" onclick="needHelp('${p.name}')">Help</button>
-    <button class="urgent" onclick="urgent('${p.name}')">Urgent</button>
-  </div>
-` : ""}
- ${canEditStatus ? `
-  <select onchange="updateStatus('${p.name}', this.value)">
-    ${statuses.map(s =>
+  ${canEditStatus ? `
+    <select onchange="updateStatus('${p.name}', this.value)">
+      ${statuses.map(s =>
             `<option ${s === p.status ? "selected" : ""}>${s}</option>`
         ).join("")}
-  </select>
-` : ""}
+    </select>
+  ` : ""}
 
-  ${p.name.toLowerCase() === currentUser ? `
+  ${isMe ? `
     <input placeholder="Write update..."
       onkeydown="handleNote(event, '${p.name}')">
 
