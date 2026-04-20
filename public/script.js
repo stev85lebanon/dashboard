@@ -5,7 +5,6 @@ let isLeader = false;
 
 const statuses = ["Available", "Busy", "Focused", "In Meeting"];
 
-
 // =======================
 // LOGIN
 // =======================
@@ -81,33 +80,68 @@ function render() {
         const card = document.createElement("div");
         card.className = "card";
 
+        //         card.innerHTML = `
+        // <h3>${p.name} ${p.role === "leader" ? "👨‍💼" : ""}</h3>
+        //             <div class="status status-${statusClass}">
+        //                 ${p.status}
+        //             </div>
+
+        //             <div class="note">
+        //                 ${p.note ? "💬 " + p.note : "<i>No update</i>"}
+        //             </div>
+
+        //             ${canEdit ? `
+        //                 <select onchange="updateStatus('${p.name}', this.value)">
+        //                     ${statuses.map(s =>
+        //             `<option ${s === p.status ? "selected" : ""}>${s}</option>`
+        //         ).join("")}
+        //                 </select>
+        //             ` : ""}
+
+        //             ${p.name === currentUser ? `
+        //                 <input placeholder="Write update..."
+        //                     onkeydown="handleNote(event, '${p.name}')">
+
+        //                 <button onclick="needHelp('${p.name}')">Help</button>
+        //                 <button onclick="urgent('${p.name}')">Urgent</button>
+        //             ` : ""}
+        //         `;
         card.innerHTML = `
-<h3>${p.name} ${p.role === "leader" ? "👨‍💼" : ""}</h3>
-            <div class="status status-${statusClass}">
-                ${p.status}
-            </div>
+  <div class="user-header">
+    <div class="avatar">
+      <img src="${p.avatar || 'images/default.png'}" />
+      <span class="dot ${p.online ? "online" : "offline"}"></span>
+    </div>
 
-            <div class="note">
-                ${p.note ? "💬 " + p.note : "<i>No update</i>"}
-            </div>
+    <h3>${p.name}</h3>
+  </div>
 
-            ${canEdit ? `
-                <select onchange="updateStatus('${p.name}', this.value)">
-                    ${statuses.map(s =>
+  <div class="status status-${statusClass}">
+    ${p.status}
+  </div>
+
+  <div class="note-box">
+    ${p.note ? p.note : "No update yet..."}
+  </div>
+
+  ${canEdit ? `
+    <select onchange="updateStatus('${p.name}', this.value)">
+      ${statuses.map(s =>
             `<option ${s === p.status ? "selected" : ""}>${s}</option>`
         ).join("")}
-                </select>
-            ` : ""}
+    </select>
+  ` : ""}
 
-            ${p.name === currentUser ? `
-                <input placeholder="Write update..."
-                    onkeydown="handleNote(event, '${p.name}')">
+  ${p.name === currentUser ? `
+    <input placeholder="Write update..."
+      onkeydown="handleNote(event, '${p.name}')">
 
-                <button onclick="needHelp('${p.name}')">Help</button>
-                <button onclick="urgent('${p.name}')">Urgent</button>
-            ` : ""}
-        `;
-
+    <div class="actions">
+      <button class="help" onclick="needHelp('${p.name}')">Help</button>
+      <button class="urgent" onclick="urgent('${p.name}')">Urgent</button>
+    </div>
+  ` : ""}
+`;
         container.appendChild(card);
     });
 

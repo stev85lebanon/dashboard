@@ -20,7 +20,9 @@ const UserSchema = new mongoose.Schema({
     name: String,
     status: String,
     note: String,
-    role: String   // 👈 NEW
+    role: String,  // 👈 NEW
+    avatar: String   // ✅ ADD THIS
+
 });
 
 const User = mongoose.model("User", UserSchema);
@@ -35,7 +37,20 @@ io.on("connection", async (socket) => {
 
     // ✅ LOGIN (ADD THIS)
     socket.on("login", async (data) => {
+
         socket.userName = data.name;
+
+        // 🎯 assign avatar based on name
+        let avatar = "images/default.png";
+
+        if (data.name === "Amir") avatar = "images/amir.jpg";
+        if (data.name === "Casper") avatar = "images/casper.jpg";
+        if (data.name === "John") avatar = "images/john.jpg";
+        if (data.name === "Lina") avatar = "images/lina.jpg";
+        if (data.name === "Mustafa") avatar = "images/mustafa.jpg";
+        if (data.name === "Sara") avatar = "images/sara.jpg";
+        if (data.name === "Yasin") avatar = "images/yasin.jpg";
+
         let user = await User.findOne({ name: data.name });
 
         if (!user) {
@@ -43,11 +58,12 @@ io.on("connection", async (socket) => {
                 name: data.name,
                 status: "Available",
                 note: "",
-                role: data.role
+                role: data.role,
+                avatar: avatar   // ✅ SAVE IT
             });
         } else {
-            // update role if needed
             user.role = data.role;
+            user.avatar = avatar; // update if needed
             await user.save();
         }
 

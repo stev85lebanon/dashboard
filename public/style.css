@@ -186,3 +186,108 @@ button:hover {
 .leave-btn:hover {
     background: #b52a37;
 }
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.user-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.avatar {
+    width: 70px;
+    height: 70px;
+    position: relative;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    border: 2px solid white;
+}
+
+.online {
+    background: green;
+}
+
+.offline {
+    background: gray;
+}
+
+.note-box {
+    background: #f4f6f9;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #333;
+    margin: 10px 0;
+    min-height: 40px;
+}
+
+.leave-btn {
+    background: linear-gradient(135deg, #ff4d4d, #c82333);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.leave-btn:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+.actions {
+    margin-top: 8px;
+}
+
+.help {
+    background: #ffc107;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    margin-right: 5px;
+}
+
+.urgent {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+}
+
+input {
+    width: 90%;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin-top: 6px;
+}
