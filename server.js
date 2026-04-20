@@ -40,30 +40,39 @@ io.on("connection", async (socket) => {
 
         socket.userName = data.name;
 
-        // 🎯 assign avatar based on name
-        let avatar = "/images/default.png";
+        // 👇 normalize for logic
+        const key = data.name.toLowerCase();
 
-        if (data.name === "Amir") avatar = "/images/amir.jpg";
-        if (data.name === "Casper") avatar = "/images/casper.jpg";
-        if (data.name === "John") avatar = "/images/john.jpg";
-        if (data.name === "Lina") avatar = "/images/lina.jpg";
-        if (data.name === "Mustafa") avatar = "/images/mustafa.jpg";
-        if (data.name === "Sara") avatar = "/images/sara.jpg";
-        if (data.name === "Yasin") avatar = "/images/yasin.jpg";
+        // 🎯 avatar map
+        const avatars = {
+            amir: "/images/amir.jpg",
+            casper: "/images/casper.jpg",
+            john: "/images/john.jpg",
+            lina: "/images/lina.jpg",
+            mustafa: "/images/mustafa.jpg",
+            sara: "/images/sara.jpg",
+            yasin: "/images/yasin.jpg"
+        };
 
-        let user = await User.findOne({ name: data.name });
+        const avatar = avatars[key] || "/images/default.png";
+
+        // 👇 FIX display name (capitalized)
+        const displayName =
+            data.name.charAt(0).toUpperCase() + data.name.slice(1).toLowerCase();
+
+        let user = await User.findOne({ name: displayName });
 
         if (!user) {
             user = await User.create({
-                name: data.name,
+                name: displayName,   // ✅ store clean name
                 status: "Available",
                 note: "",
                 role: data.role,
-                avatar: avatar   // ✅ SAVE IT
+                avatar: avatar
             });
         } else {
             user.role = data.role;
-            user.avatar = avatar; // update if needed
+            user.avatar = avatar;
             await user.save();
         }
 
