@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const app = express();
+const onlineUsers = {};
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
@@ -119,23 +120,23 @@ io.on("connection", async (socket) => {
     });
     socket.on("disconnect", async () => {
         if (socket.userName) {
+            delete onlineUsers[socket.userName];
+
             await User.deleteOne({ name: socket.userName });
 
-            const users = await User.find();
-            io.emit("refresh", users);
+            io.emit("refresh", await User.find());
         }
     });
     socket.on("assignTask", ({ text, target }) => {
         const taskData = {
             text,
-            time: new Date(),
-            from: "Leader"
+            time: new Date()
         };
 
-        const targetSocket = onlineUsers[target];
+        const socketId = onlineUsers[target];
 
-        if (targetSocket) {
-            io.to(targetSocket).emit("taskAssigned", taskData);
+        if (socketId) {
+            io.to(socketId).emit("taskAssigned", taskData);
         }
     });
 });

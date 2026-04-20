@@ -3,6 +3,7 @@ const socket = io();
 let currentUser = "";
 let isLeader = false;
 let leaderMessages = [];
+let team = [];
 const statuses = ["Available", "Busy", "Focused", "In Meeting"];
 
 // =======================
@@ -177,6 +178,7 @@ function render() {
     document.getElementById("available").innerText = available;
     document.getElementById("busy").innerText = busy;
     document.getElementById("focused").innerText = focused;
+    populateTaskUsers();
 }
 
 
@@ -256,15 +258,30 @@ function highlightCards() {
 function populateTaskUsers() {
     const select = document.getElementById("taskUserSelect");
 
-    if (!select) return;
+    if (!select || !team) return;
 
     select.innerHTML = "";
 
     team.forEach(user => {
         if (user.role !== "leader") {
             select.innerHTML += `
-                <option value="${user.name}">${user.name}</option>
+                <option value="${user.name}">
+                    ${user.name}
+                </option>
             `;
         }
     });
+}
+function assignTask() {
+    const input = document.getElementById("taskInput");
+    const user = document.getElementById("taskUserSelect").value;
+
+    if (!input.value.trim()) return;
+
+    socket.emit("assignTask", {
+        text: input.value,
+        target: user
+    });
+
+    input.value = "";
 }
