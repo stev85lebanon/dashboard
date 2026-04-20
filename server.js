@@ -39,7 +39,10 @@ io.on("connection", async (socket) => {
     // ✅ LOGIN (ADD THIS)
     socket.on("login", async (data) => {
 
-        socket.userName = data.name;
+        const normalizedName = data.name.toLowerCase();
+
+        socket.userName = normalizedName;
+        onlineUsers[normalizedName] = socket.id;
 
         // 👇 normalize for logic
         const key = data.name.toLowerCase();
@@ -59,7 +62,8 @@ io.on("connection", async (socket) => {
 
         // 👇 FIX display name (capitalized)
         const displayName =
-            data.name.charAt(0).toUpperCase() + data.name.slice(1).toLowerCase();
+            data.name.charAt(0).toUpperCase() +
+            data.name.slice(1).toLowerCase();
 
         let user = await User.findOne({ name: displayName });
 
@@ -120,7 +124,7 @@ io.on("connection", async (socket) => {
     });
     socket.on("disconnect", async () => {
         if (socket.userName) {
-            delete onlineUsers[socket.userName];
+            delete onlineUsers[socket.userName]; // ✅ correct cleanup
 
             await User.deleteOne({ name: socket.userName });
 
