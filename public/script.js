@@ -3,25 +3,22 @@ const socket = io();
 let currentUser = "";
 let isLeader = false;
 let leaderMessages = [];
-const statuses = ["Available", "Busy", "Focused", "In Meeting"];
+let myTasks = [];
+let team = [];
 
-// =======================
 // LOGIN
-// =======================
-
 function login() {
     const name = document.getElementById("userName").value;
 
-    if (!name) return alert("Select a user");
+    if (!name) return;
 
     currentUser = name;
-
-    // 🎯 assign role automatically
     isLeader = name === "casper";
 
-    const role = isLeader ? "leader" : "employee";
-
-    socket.emit("login", { name, role });
+    socket.emit("login", {
+        name,
+        role: isLeader ? "leader" : "employee"
+    });
 
     document.getElementById("login").style.display = "none";
     document.getElementById("app").style.display = "block";
@@ -31,229 +28,127 @@ function login() {
     }
 }
 
-// =======================
 // SOCKET EVENTS
-// =======================
-
-// initial data
 socket.on("init", (data) => {
     team = data;
     render();
 });
 
-// refresh data
 socket.on("refresh", (data) => {
     team = data;
     render();
 });
 
-// leader message
-// socket.on("leaderMessage", (msg) => {
-//     document.getElementById("leaderMessage").innerText =
-//         "👨‍💼 Leader: " + msg;
-
-//     highlightCards();
-// });
+// 🔔 leader messages
 socket.on("leaderMessage", (msg) => {
-    leaderMessages.push(msg); // add to top
+    leaderMessages.push(msg);
 
-    // keep only last 10
-    if (leaderMessages.length > 10) {
-        leaderMessages.pop();
+    if (leaderMessages.length > 20) {
+        leaderMessages.shift();
     }
 
     renderLeaderMessages();
 });
 
+// 📌 tasks
+socket.on("taskAssigned", (task) => {
+    myTasks.push(task);
+    renderTasks();
+});
+
+// RENDER MESSAGES
 function renderLeaderMessages() {
     const container = document.getElementById("leaderMessages");
 
     let html = "";
-    let lastDateLabel = "";
+    let lastLabel = "";
 
     leaderMessages.forEach(msg => {
-        if (!msg.text) return;
-
-        const dateObj = new Date(msg.time);
+        const d = new Date(msg.time);
 
         const today = new Date();
         const yesterday = new Date();
         yesterday.setDate(today.getDate() - 1);
 
-        let label = dateObj.toLocaleDateString();
+        let label = d.toLocaleDateString();
 
-        if (dateObj.toDateString() === today.toDateString()) {
+        if (d.toDateString() === today.toDateString()) {
             label = "Today";
-        } else if (dateObj.toDateString() === yesterday.toDateString()) {
+        } else if (d.toDateString() === yesterday.toDateString()) {
             label = "Yesterday";
         }
 
-        // 🧠 Add date label only when it changes
-        if (label !== lastDateLabel) {
+        if (label !== lastLabel) {
             html += `<div class="date-label">${label}</div>`;
-            lastDateLabel = label;
+            lastLabel = label;
         }
 
-        const time = dateObj.toLocaleTimeString([], {
+        const time = d.toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit"
         });
 
         html += `
-            <div class="leader-message-item">
-                <span class="time">${time}</span>
-                👨‍💼 ${msg.text}
+            <div class="msg">
+                <span>${time}</span> 👨‍💼 ${msg.text}
             </div>
         `;
     });
 
     container.innerHTML = html;
-
-    // ✅ auto scroll to bottom
     container.scrollTop = container.scrollHeight;
 }
-// =======================
-// RENDER UI
-// =======================
-function render() {
-    const container = document.getElementById("dashboard");
-    container.innerHTML = "";
 
-    let available = 0;
-    let busy = 0;
-    let focused = 0;
+// RENDER TASKS
+function renderTasks() {
+    const container = document.getElementById("tasks");
 
-    team.forEach((p) => {
-
-        // count overview
-        if (p.status === "Available") available++;
-        if (p.status === "Busy") busy++;
-        if (p.status === "Focused") focused++;
-        const canEdit = isLeader || p.name.toLowerCase() === currentUser;
-        const statusClass = p.status
-            .toLowerCase()
-            .replace(/\s+/g, "-");
-        if (p.role === "leader") return;
-
-        const card = document.createElement("div");
-        card.className = "card";
-
-        card.innerHTML = `
-  <div class="user-header">
-    <div class="avatar">
-      <img src="${p.avatar || '/images/default.png'}" />
-      <span class="dot ${p.online ? "online" : "offline"}"></span>
-    </div>
-
-    <h3>${p.name}</h3>
-  </div>
-
-  <div class="status status-${statusClass}">
-    ${p.status}
-  </div>
-
-  <div class="note-box">
-    ${p.note ? p.note : "No update yet..."}
-  </div>
-
-  ${canEdit ? `
-    <select onchange="updateStatus('${p.name}', this.value)">
-      ${statuses.map(s =>
-            `<option ${s === p.status ? "selected" : ""}>${s}</option>`
-        ).join("")}
-    </select>
-  ` : ""}
-
-  ${p.name.toLowerCase() === currentUser ? `
-    <input placeholder="Write update..."
-      onkeydown="handleNote(event, '${p.name}')">
-
-    <div class="actions">
-      <button class="help" onclick="needHelp('${p.name}')">Help</button>
-      <button class="urgent" onclick="urgent('${p.name}')">Urgent</button>
-    </div>
-  ` : ""}
-`;
-        container.appendChild(card);
-    });
-
-    // update overview
-    document.getElementById("available").innerText = available;
-    document.getElementById("busy").innerText = busy;
-    document.getElementById("focused").innerText = focused;
+    container.innerHTML = myTasks.map(t => `
+        <div class="task">
+            📌 ${t.text}
+            <span>${new Date(t.time).toLocaleTimeString()}</span>
+        </div>
+    `).join("");
 }
 
-
-// =======================
-// USER ACTIONS
-// =======================
-
-// change status
-function updateStatus(name, status) {
-    socket.emit("updateStatus", { name, status });
-}
-function leave() {
-    socket.emit("disconnectUser", currentUser);
-
-    document.getElementById("app").style.display = "none";
-    document.getElementById("login").style.display = "block";
-}
-window.addEventListener("beforeunload", () => {
-    socket.emit("disconnectUser", currentUser);
-});
-// write note
-function handleNote(e, name) {
-    if (e.key === "Enter") {
-        socket.emit("updateNote", {
-            name,
-            note: e.target.value
-        });
-
-        e.target.value = "";
-    }
-}
-
-// quick buttons
-function needHelp(name) {
-    socket.emit("updateNote", {
-        name,
-        note: "⚠️ Needs help"
-    });
-}
-
-function urgent(name) {
-    socket.emit("updateNote", {
-        name,
-        note: "🚨 URGENT!"
-    });
-}
-
-
-// =======================
-// LEADER ACTION
-// =======================
+// SEND BROADCAST
 function sendInstruction() {
     const input = document.getElementById("leaderInput");
-    const msg = input.value;
 
-    if (!msg.trim()) return;
+    if (!input.value.trim()) return;
 
-    socket.emit("leaderMessage", msg);
+    socket.emit("leaderMessage", input.value);
+    input.value = "";
+}
+
+// SEND TASK
+function assignTask() {
+    const input = document.getElementById("taskInput");
+    const user = document.getElementById("taskUser").value;
+
+    if (!input.value.trim()) return;
+
+    socket.emit("assignTask", {
+        text: input.value,
+        target: user
+    });
 
     input.value = "";
 }
 
+// POPULATE USERS
+function render() {
+    const select = document.getElementById("taskUser");
 
-// =======================
-// VISUAL FEEDBACK
-// =======================
-function highlightCards() {
-    document.querySelectorAll(".card").forEach(card => {
-        card.style.transition = "0.3s";
-        card.style.background = "#ffe0e0";
+    if (!select) return;
 
-        setTimeout(() => {
-            card.style.background = "white";
-        }, 800);
+    select.innerHTML = "";
+
+    team.forEach(u => {
+        if (u.role !== "leader") {
+            select.innerHTML += `
+                <option value="${u.name}">${u.name}</option>
+            `;
+        }
     });
 }

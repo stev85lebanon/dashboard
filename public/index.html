@@ -2,54 +2,62 @@
 <html>
   <head>
     <title>Dashboard</title>
-    <link rel="stylesheet" href="style.css" />
+
+    <style>
+      body {
+        font-family: Arial;
+      }
+
+      #leaderMessages {
+        height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+      }
+
+      .date-label {
+        text-align: center;
+        color: gray;
+        margin: 10px 0;
+      }
+
+      .task {
+        background: #eef;
+        margin: 5px;
+        padding: 5px;
+      }
+    </style>
   </head>
   <body>
-    <!-- LOGIN -->
     <div id="login">
-      <h2>Select your name</h2>
       <select id="userName">
-        <option value="">Select user</option>
-        <option value="amir">Amir</option>
         <option value="casper">Casper (Leader)</option>
         <option value="john">John</option>
         <option value="lina">Lina</option>
-        <option value="mustafa">Mustafa</option>
-        <option value="sara">Sara</option>
-        <option value="yasin">Yasin</option>
-      </select>
-      <select id="role">
-        <option value="employee">Employee</option>
-        <option value="leader">Leader</option>
       </select>
 
-      <button onclick="login()">Enter</button>
+      <button onclick="login()">Login</button>
     </div>
 
-    <!-- APP -->
     <div id="app" style="display: none">
-      <!-- HEADER -->
-      <div class="header">
-        📊 Hybrid Leadership Dashboard
-        <button onclick="leave()">Leave</button>
-      </div>
+      <h2>🔔 Notifications</h2>
+      <div id="leaderMessages"></div>
 
-      <!-- LEADER PANEL -->
+      <h2>📌 My Tasks</h2>
+      <div id="tasks"></div>
+
       <div id="leaderPanel">
-        <h3>👨‍💼 Leader Panel</h3>
-        <input id="leaderInput" placeholder="Write instruction..." />
-        <button onclick="sendInstruction()">Send</button>
-      </div>
-      <div id="leaderMessages" class="leader-messages"></div>
-      <!-- OVERVIEW (NEW) -->
-      <div class="overview">
-        <div class="box available"><b id="available"></b><br />Available</div>
-        <div class="box focused"><b id="focused"></b><br />Focused</div>
-        <div class="box busy"><b id="busy"></b><br />Busy</div>
-      </div>
+        <h3>Leader Panel</h3>
 
-      <!-- DASHBOARD -->
-      <div id="dashboard"></div>
+        <input id="leaderInput" placeholder="Send message..." />
+        <button onclick="sendInstruction()">Send to All</button>
+
+        <br /><br />
+
+        <input id="taskInput" placeholder="Assign task..." />
+        <select id="taskUser"></select>
+        <button onclick="assignTask()">Assign Task</button>
+      </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
