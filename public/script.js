@@ -68,22 +68,49 @@ socket.on("leaderMessage", (msg) => {
 function renderLeaderMessages() {
     const container = document.getElementById("leaderMessages");
 
-    container.innerHTML = leaderMessages
-        .map(msg => {
-            const time = new Date(msg.time).toLocaleString();
-            // const time = new Date(msg.time).toLocaleTimeString([], {
-            //     hour: "2-digit",
-            //     minute: "2-digit"
-            // });
+    let html = "";
+    let lastDateLabel = "";
 
-            return `
-                <div class="leader-message-item">
-                    <span class="time">[${time}]</span>
-                    👨‍💼 ${msg.text}
-                </div>
-            `;
-        })
-        .join("");
+    leaderMessages.forEach(msg => {
+        if (!msg.text) return;
+
+        const dateObj = new Date(msg.time);
+
+        const today = new Date();
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+
+        let label = dateObj.toLocaleDateString();
+
+        if (dateObj.toDateString() === today.toDateString()) {
+            label = "Today";
+        } else if (dateObj.toDateString() === yesterday.toDateString()) {
+            label = "Yesterday";
+        }
+
+        // 🧠 Add date label only when it changes
+        if (label !== lastDateLabel) {
+            html += `<div class="date-label">${label}</div>`;
+            lastDateLabel = label;
+        }
+
+        const time = dateObj.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+
+        html += `
+            <div class="leader-message-item">
+                <span class="time">${time}</span>
+                👨‍💼 ${msg.text}
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+
+    // ✅ auto scroll to bottom
+    container.scrollTop = container.scrollHeight;
 }
 // =======================
 // RENDER UI
