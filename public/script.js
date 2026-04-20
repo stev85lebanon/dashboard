@@ -129,8 +129,7 @@ function render() {
         if (p.status === "Available") available++;
         if (p.status === "Busy") busy++;
         if (p.status === "Focused") focused++;
-        const canEdit = isLeader || p.name.toLowerCase() === currentUser;
-        const statusClass = p.status
+        const canEditStatus = isLeader || isMe; const statusClass = p.status
             .toLowerCase()
             .replace(/\s+/g, "-");
         if (p.role === "leader") return;
@@ -159,19 +158,21 @@ function render() {
 </div>
 
 ${isMe ? `
-  <div class="my-tasks">
-      ${myTasks.map(t => `
-          <div class="task-mini">📌 ${t.text}</div>
-      `).join("")}
+  <input placeholder="Write update..."
+    onkeydown="handleNote(event, '${p.name}')">
+
+  <div class="actions">
+    <button class="help" onclick="needHelp('${p.name}')">Help</button>
+    <button class="urgent" onclick="urgent('${p.name}')">Urgent</button>
   </div>
 ` : ""}
-  ${canEdit ? `
-    <select onchange="updateStatus('${p.name}', this.value)">
-      ${statuses.map(s =>
+ ${canEditStatus ? `
+  <select onchange="updateStatus('${p.name}', this.value)">
+    ${statuses.map(s =>
             `<option ${s === p.status ? "selected" : ""}>${s}</option>`
         ).join("")}
-    </select>
-  ` : ""}
+  </select>
+` : ""}
 
   ${p.name.toLowerCase() === currentUser ? `
     <input placeholder="Write update..."
