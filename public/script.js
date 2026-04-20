@@ -55,7 +55,7 @@ socket.on("refresh", (data) => {
 //     highlightCards();
 // });
 socket.on("leaderMessage", (msg) => {
-    leaderMessages.unshift(msg); // add to top
+    leaderMessages.push(msg); // add to top
 
     // keep only last 10
     if (leaderMessages.length > 10) {
