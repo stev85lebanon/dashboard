@@ -8,14 +8,18 @@ const statuses = ["Available", "Busy", "Focused", "In Meeting"];
 // =======================
 // LOGIN
 // =======================
-function login() {
-    const name = document.getElementById("userName").value.trim();
-    const role = document.getElementById("role").value;
 
-    if (!name) return alert("Enter your name");
+function login() {
+    const name = document.getElementById("userName").value;
+
+    if (!name) return alert("Select a user");
 
     currentUser = name;
-    isLeader = role === "leader";
+
+    // 🎯 assign role automatically
+    isLeader = name === "casper";
+
+    const role = isLeader ? "leader" : "employee";
 
     socket.emit("login", { name, role });
 
@@ -26,7 +30,6 @@ function login() {
         document.getElementById("leaderPanel").style.display = "none";
     }
 }
-
 
 // =======================
 // SOCKET EVENTS
@@ -80,32 +83,6 @@ function render() {
         const card = document.createElement("div");
         card.className = "card";
 
-        //         card.innerHTML = `
-        // <h3>${p.name} ${p.role === "leader" ? "👨‍💼" : ""}</h3>
-        //             <div class="status status-${statusClass}">
-        //                 ${p.status}
-        //             </div>
-
-        //             <div class="note">
-        //                 ${p.note ? "💬 " + p.note : "<i>No update</i>"}
-        //             </div>
-
-        //             ${canEdit ? `
-        //                 <select onchange="updateStatus('${p.name}', this.value)">
-        //                     ${statuses.map(s =>
-        //             `<option ${s === p.status ? "selected" : ""}>${s}</option>`
-        //         ).join("")}
-        //                 </select>
-        //             ` : ""}
-
-        //             ${p.name === currentUser ? `
-        //                 <input placeholder="Write update..."
-        //                     onkeydown="handleNote(event, '${p.name}')">
-
-        //                 <button onclick="needHelp('${p.name}')">Help</button>
-        //                 <button onclick="urgent('${p.name}')">Urgent</button>
-        //             ` : ""}
-        //         `;
         card.innerHTML = `
   <div class="user-header">
     <div class="avatar">
