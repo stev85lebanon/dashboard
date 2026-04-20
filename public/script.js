@@ -69,7 +69,20 @@ function renderLeaderMessages() {
     const container = document.getElementById("leaderMessages");
 
     container.innerHTML = leaderMessages
-        .map(msg => `<div class="leader-message-item">👨‍💼 ${msg}</div>`)
+        .map(msg => {
+            const time = new Date(msg.time).toLocaleString();
+            // const time = new Date(msg.time).toLocaleTimeString([], {
+            //     hour: "2-digit",
+            //     minute: "2-digit"
+            // });
+
+            return `
+                <div class="leader-message-item">
+                    <span class="time">[${time}]</span>
+                    👨‍💼 ${msg.text}
+                </div>
+            `;
+        })
         .join("");
 }
 // =======================

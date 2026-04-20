@@ -104,7 +104,11 @@ io.on("connection", async (socket) => {
 
     // LEADER MESSAGE
     socket.on("leaderMessage", (msg) => {
-        io.emit("leaderMessage", msg);
+        const messageData = {
+            text: msg,
+            time: new Date()
+        };
+        io.emit("leaderMessage", messageData);
     });
 
     socket.on("disconnectUser", async (name) => {
