@@ -291,3 +291,17 @@ input {
     border: 1px solid #ddd;
     margin-top: 6px;
 }
+
+.leader-messages {
+    margin-top: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.leader-message-item {
+    background: #ffc107;
+    padding: 6px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    font-size: 14px;
+}

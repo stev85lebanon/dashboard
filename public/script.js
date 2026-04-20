@@ -2,7 +2,7 @@ const socket = io();
 
 let currentUser = "";
 let isLeader = false;
-
+let leaderMessages = [];
 const statuses = ["Available", "Busy", "Focused", "In Meeting"];
 
 // =======================
@@ -48,14 +48,30 @@ socket.on("refresh", (data) => {
 });
 
 // leader message
-socket.on("leaderMessage", (msg) => {
-    document.getElementById("leaderMessage").innerText =
-        "👨‍💼 Leader: " + msg;
+// socket.on("leaderMessage", (msg) => {
+//     document.getElementById("leaderMessage").innerText =
+//         "👨‍💼 Leader: " + msg;
 
-    highlightCards();
+//     highlightCards();
+// });
+socket.on("leaderMessage", (msg) => {
+    leaderMessages.unshift(msg); // add to top
+
+    // keep only last 10
+    if (leaderMessages.length > 10) {
+        leaderMessages.pop();
+    }
+
+    renderLeaderMessages();
 });
 
+function renderLeaderMessages() {
+    const container = document.getElementById("leaderMessages");
 
+    container.innerHTML = leaderMessages
+        .map(msg => `<div class="leader-message-item">👨‍💼 ${msg}</div>`)
+        .join("");
+}
 // =======================
 // RENDER UI
 // =======================
