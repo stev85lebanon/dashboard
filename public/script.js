@@ -4,6 +4,7 @@ let currentUser = "";
 let isLeader = false;
 let leaderMessages = [];
 let team = [];
+let myTasks = [];
 const statuses = ["Available", "Busy", "Focused", "In Meeting"];
 
 // =======================
@@ -59,7 +60,8 @@ socket.on("leaderMessage", (msg) => {
     renderLeaderMessages();
 });
 socket.on("taskAssigned", (task) => {
-    alert(`📌 New Task: ${task.text}`);
+    myTasks.unshift(task);
+    renderTasks();
 });
 
 function renderLeaderMessages() {
@@ -284,4 +286,21 @@ function assignTask() {
     });
 
     input.value = "";
+}
+function renderTasks() {
+    const container = document.getElementById("taskList");
+
+    container.innerHTML = myTasks.map(task => {
+        const time = new Date(task.time).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+
+        return `
+            <div class="task-card">
+                <div class="task-text">📌 ${task.text}</div>
+                <div class="task-time">${time}</div>
+            </div>
+        `;
+    }).join("");
 }
