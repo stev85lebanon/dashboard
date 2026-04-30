@@ -7,53 +7,88 @@
   <body>
     <!-- LOGIN -->
     <div id="login">
-      <h2>Select your name</h2>
-      <select id="userName">
-        <option value="">Select user</option>
-        <option value="amir">Amir</option>
-        <option value="casper">Casper (Leader)</option>
-        <option value="john">John</option>
-        <option value="lina">Lina</option>
-        <option value="mustafa">Mustafa</option>
-        <option value="sara">Sara</option>
-        <option value="yasin">Yasin</option>
-      </select>
-      <select id="role">
-        <option value="employee">Employee</option>
-        <option value="leader">Leader</option>
-      </select>
+      <div class="login-card">
+        <h2>👋 Welcome</h2>
+        <p class="subtitle">Select your profile to enter the dashboard</p>
 
-      <button onclick="login()">Enter</button>
+        <select id="userName">
+          <option value="">Select user</option>
+          <option value="amir">Amir</option>
+          <option value="casper">Casper (Leader)</option>
+          <option value="john">John</option>
+          <option value="lina">Lina</option>
+          <option value="mustafa">Mustafa</option>
+          <option value="sara">Sara</option>
+          <option value="yasin">Yasin</option>
+        </select>
+
+        <button class="login-btn" onclick="login()">Enter Dashboard</button>
+      </div>
     </div>
-
     <!-- APP -->
+    <div id="chatBox" class="chat-box">
+      <div class="chat-header">
+        <span id="chatTitle"></span>
+        <button
+          onclick="document.getElementById('chatBox').style.display = 'none'"
+        >
+          ✖
+        </button>
+      </div>
+
+      <div id="chatMessages" class="chat-messages"></div>
+
+      <div class="chat-input">
+        <input id="chatInput" placeholder="Type message..." />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
     <div id="app" style="display: none">
       <!-- HEADER -->
       <div class="header">
         📊 Hybrid Leadership Dashboard
-        <button onclick="leave()">Leave</button>
+
+        <div class="header-actions">
+          <!-- ✅ ADD THIS -->
+          <button
+            onclick="toggleChatList()"
+            id="chatToggle"
+            style="display: none"
+          >
+            💬 Chat with Leader
+            <span id="totalUnread" class="badge"></span>
+          </button>
+
+          <button class="leave-btn" onclick="leave()">🚪 Leave</button>
+        </div>
       </div>
 
       <!-- LEADER PANEL -->
       <div id="leaderPanel">
         <h3>👨‍💼 Leader Panel</h3>
-        <input id="leaderInput" placeholder="Write instruction..." />
-        <button onclick="sendInstruction()">Send</button>
-        <input id="taskInput" placeholder="Assign task..." />
 
-        <select id="taskUserSelect"></select>
+        <div class="leader-row">
+          <input id="leaderInput" placeholder="Write instruction..." />
+          <button onclick="sendInstruction()">Send</button>
+        </div>
 
-        <button onclick="assignTask()">Assign Task</button>
+        <div class="leader-row">
+          <input id="taskInput" placeholder="Assign task..." />
+          <select id="taskUserSelect"></select>
+          <button onclick="assignTask()">Assign</button>
+        </div>
       </div>
       <div id="leaderMessages" class="leader-messages"></div>
       <!-- OVERVIEW (NEW) -->
       <div class="overview">
-        <div class="box available"><b id="available"></b><br />Available</div>
-        <div class="box focused"><b id="focused"></b><br />Focused</div>
-        <div class="box busy"><b id="busy"></b><br />Busy</div>
+        <div class="box available"><b id="available">0</b><br />Available</div>
+
+        <div class="box focused"><b id="focused">0</b><br />Focused</div>
+
+        <div class="box busy"><b id="busy">0</b><br />Busy</div>
       </div>
       <div class="task-panel">
-        <h3>📌 My Tasks</h3>
+        <h3>📌 Tasks</h3>
         <div id="taskList"></div>
       </div>
       <!-- DASHBOARD -->

@@ -4,26 +4,25 @@ let currentUser = "";
 let isLeader = false;
 let leaderMessages = [];
 let team = [];
-let myTasks = [];
+let allTasks = [];
+let currentChatUser = "";
+let chats = {}; // store messages per user
+let unread = {}; // { user: count }
 const statuses = ["Available", "Busy", "Focused", "In Meeting"];
 
-// =======================
 // LOGIN
-// =======================
-
 function login() {
     const name = document.getElementById("userName").value;
 
     if (!name) return alert("Select a user");
 
-    currentUser = name;
+    currentUser = name.toLowerCase();
+    isLeader = currentUser === "casper";
 
-    // 🎯 assign role automatically
-    isLeader = name === "casper";
-
-    const role = isLeader ? "leader" : "employee";
-
-    socket.emit("login", { name, role });
+    socket.emit("login", {
+        name,
+        role: isLeader ? "leader" : "employee"
+    });
 
     document.getElementById("login").style.display = "none";
     document.getElementById("app").style.display = "block";
@@ -31,93 +30,79 @@ function login() {
     if (!isLeader) {
         document.getElementById("leaderPanel").style.display = "none";
     }
+    if (!isLeader) {
+        document.getElementById("chatToggle").style.display = "inline-block";
+    }
 }
 
-// =======================
-// SOCKET EVENTS
-// =======================
-
-// initial data
+// SOCKET
 socket.on("init", (data) => {
     team = data;
     render();
 });
 
-// refresh data
 socket.on("refresh", (data) => {
     team = data;
     render();
 });
 
-socket.on("leaderMessage", (msg) => {
-    leaderMessages.push(msg); // add to top
+socket.on("taskUpdate", (tasks) => {
+    allTasks = tasks;
+    renderTasks();
+});
 
-    // keep only last 10
+socket.on("leaderMessage", (msg) => {
+    leaderMessages.unshift(msg);
+
     if (leaderMessages.length > 10) {
         leaderMessages.pop();
     }
 
     renderLeaderMessages();
 });
-socket.on("taskAssigned", (task) => {
-    myTasks.unshift(task);
-    renderTasks();
+
+socket.on("privateMessage", (msg) => {
+    const otherUser =
+        msg.from === currentUser ? msg.to : msg.from;
+
+    if (!chats[otherUser]) chats[otherUser] = [];
+
+    chats[otherUser].push(msg);
+
+    // ✅ IMPORTANT: add this back
+    if (otherUser !== currentChatUser) {
+        unread[otherUser] = (unread[otherUser] || 0) + 1;
+
+        // 🔊 sound
+        new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3").play();
+
+        // 🔔 notification
+        if (Notification.permission === "granted") {
+            const n = new Notification("💬 " + msg.from, {
+                body: msg.text,
+                tag: msg.from + "-" + Date.now(),
+                renotify: true
+            });
+
+            n.onclick = () => {
+                window.focus();
+                openChat(otherUser);
+            };
+        }
+    }
+
+    render();
+
+    if (otherUser === currentChatUser) {
+        renderChat();
+    }
 });
-
-function renderLeaderMessages() {
-    const container = document.getElementById("leaderMessages");
-
-    let html = "";
-    let lastDateLabel = "";
-
-    leaderMessages.forEach(msg => {
-        if (!msg.text) return;
-
-        const dateObj = new Date(msg.time);
-
-        const today = new Date();
-        const yesterday = new Date();
-        yesterday.setDate(today.getDate() - 1);
-
-        let label = dateObj.toLocaleDateString();
-
-        if (dateObj.toDateString() === today.toDateString()) {
-            label = "Today";
-        } else if (dateObj.toDateString() === yesterday.toDateString()) {
-            label = "Yesterday";
-        }
-
-        // 🧠 Add date label only when it changes
-        if (label !== lastDateLabel) {
-            html += `<div class="date-label">${label}</div>`;
-            lastDateLabel = label;
-        }
-
-        const time = dateObj.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
-
-        html += `
-            <div class="leader-message-item">
-                <span class="time">${time}</span>
-                👨‍💼 ${msg.text}
-            </div>
-        `;
-    });
-
-    container.innerHTML = html;
-
-    // ✅ auto scroll to bottom
-    container.scrollTop = container.scrollHeight;
-}
-// =======================
-// RENDER UI
-// =======================
+// RENDER USERS
 function render() {
     const container = document.getElementById("dashboard");
     container.innerHTML = "";
 
+    // ✅ ADD THIS
     let available = 0;
     let busy = 0;
     let focused = 0;
@@ -125,165 +110,116 @@ function render() {
     team.forEach((p) => {
         const isMe = p.name.toLowerCase() === currentUser;
 
-        // count overview
+        // ✅ COUNT STATUS
         if (p.status === "Available") available++;
         if (p.status === "Busy") busy++;
         if (p.status === "Focused") focused++;
-        const canEditStatus = isLeader || isMe; const statusClass = p.status
-            .toLowerCase()
-            .replace(/\s+/g, "-");
+
         if (p.role === "leader") return;
 
         const card = document.createElement("div");
-        card.className = "card " + (isMe ? "me" : "other");
+        card.className = "card " + (isMe ? "me" : "");
+
+        const statusClass = p.status.toLowerCase().replace(/\s+/g, "-");
+
         card.innerHTML = `
-  <div class="user-header">
+<div class="user-header">
     <div class="avatar">
-      <img src="${p.avatar || '/images/default.png'}" />
-      <span class="dot ${p.online ? "online" : "offline"}"></span>
+        <img src="${p.avatar || '/images/default.png'}"/>
     </div>
 
     <h3>
-      ${p.name}
-      ${isMe ? '<span class="you-badge">YOU</span>' : ''}
+        ${p.name}
+        ${isMe ? `<span class="you-badge">YOU</span>` : ""}
     </h3>
-  </div>
+</div>
 
-  <div class="status status-${statusClass}">
+<div class="status status-${statusClass}">
     ${p.status}
-  </div>
+</div>
 
-  <div class="note-box">
-    ${p.note ? p.note : "No update yet..."}
-  </div>
+<div class="location-badge">
+    ${p.location === "Remote" ? "🏠 Remote" : "🏢 On-site"}
+</div>
 
-  ${isMe ? `
-    <div class="my-tasks">
-      ${myTasks.map(t => `
-        <div class="task-mini">📌 ${t.text}</div>
-      `).join("")}
+<div class="note-box">
+    ${p.note || "No update"}
+</div>
+
+${!isMe ? `
+    <div class="card-actions">
+        <button class="chat-btn" onclick="openChat('${p.name.toLowerCase()}')">
+    💬 Message
+    ${unread[p.name.toLowerCase()] ? `
+        <span class="badge">${unread[p.name.toLowerCase()]}</span>
+    ` : ""}
+</button>
     </div>
-  ` : ""}
+` : ""}
 
-  ${canEditStatus ? `
+${isMe ? `
+    <input placeholder="Write update"
+        onkeydown="handleNote(event, '${p.name}')">
+
     <select onchange="updateStatus('${p.name}', this.value)">
-      ${statuses.map(s =>
+        ${statuses.map(s =>
             `<option ${s === p.status ? "selected" : ""}>${s}</option>`
         ).join("")}
     </select>
-  ` : ""}
-
-  ${isMe ? `
-    <input placeholder="Write update..."
-      onkeydown="handleNote(event, '${p.name}')">
 
     <div class="actions">
-      <button class="help" onclick="needHelp('${p.name}')">Help</button>
-      <button class="urgent" onclick="urgent('${p.name}')">Urgent</button>
+        <button onclick="updateLocation('${p.name}','On-site')">🏢</button>
+        <button onclick="updateLocation('${p.name}','Remote')">🏠</button>
     </div>
-  ` : ""}
+` : ""}
 `;
+
         container.appendChild(card);
     });
 
-    // update overview
+    // ✅ UPDATE UI
     document.getElementById("available").innerText = available;
     document.getElementById("busy").innerText = busy;
     document.getElementById("focused").innerText = focused;
+
     populateTaskUsers();
+
 }
 
-
-// =======================
-// USER ACTIONS
-// =======================
-
-// change status
+// STATUS
 function updateStatus(name, status) {
     socket.emit("updateStatus", { name, status });
 }
-function leave() {
-    socket.emit("disconnectUser", currentUser);
 
-    document.getElementById("app").style.display = "none";
-    document.getElementById("login").style.display = "block";
-}
-window.addEventListener("beforeunload", () => {
-    socket.emit("disconnectUser", currentUser);
-});
-// write note
+// NOTE
 function handleNote(e, name) {
     if (e.key === "Enter") {
         socket.emit("updateNote", {
             name,
             note: e.target.value
         });
-
         e.target.value = "";
     }
 }
 
-// quick buttons
-function needHelp(name) {
-    socket.emit("updateNote", {
-        name,
-        note: "⚠️ Needs help"
-    });
-}
-
-function urgent(name) {
-    socket.emit("updateNote", {
-        name,
-        note: "🚨 URGENT!"
-    });
-}
-
-
-// =======================
-// LEADER ACTION
-// =======================
-function sendInstruction() {
-    const input = document.getElementById("leaderInput");
-    const msg = input.value;
-
-    if (!msg.trim()) return;
-
-    socket.emit("leaderMessage", msg);
-
-    input.value = "";
-}
-
-
-// =======================
-// VISUAL FEEDBACK
-// =======================
-function highlightCards() {
-    document.querySelectorAll(".card").forEach(card => {
-        card.style.transition = "0.3s";
-        card.style.background = "#ffe0e0";
-
-        setTimeout(() => {
-            card.style.background = "white";
-        }, 800);
-    });
-}
+// POPULATE USERS
 function populateTaskUsers() {
     const select = document.getElementById("taskUserSelect");
-
-    if (!select || !team) return;
+    if (!select) return;
 
     select.innerHTML = "";
 
     team.forEach(user => {
         if (user.role !== "leader") {
-            select.innerHTML += `
-                <option value="${user.name}">
-                    ${user.name}
-                </option>
-            `;
+            const option = document.createElement("option");
+            option.value = user.name.toLowerCase();
+            option.textContent = user.name;
+            select.appendChild(option);
         }
     });
 }
+
+// ASSIGN TASK
 function assignTask() {
     const input = document.getElementById("taskInput");
     const user = document.getElementById("taskUserSelect").value;
@@ -297,20 +233,189 @@ function assignTask() {
 
     input.value = "";
 }
+
+// RENDER TASKS
 function renderTasks() {
     const container = document.getElementById("taskList");
 
-    container.innerHTML = myTasks.map(task => {
-        const time = new Date(task.time).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
+    let visibleTasks = isLeader
+        ? allTasks
+        : allTasks.filter(t => t.target === currentUser);
+
+    container.innerHTML = visibleTasks.map(task => {
+
+        // ✅ calculate times per task (CORRECT place)
+        const doneTime = task.completedAt
+            ? new Date(task.completedAt).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            })
+            : "";
+
+        const blockedTime = task.blockedAt
+            ? new Date(task.blockedAt).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            })
+            : "";
+
+        return `
+        <div style="
+            padding:10px;
+            margin:6px;
+            border-radius:8px;
+            background:
+                ${task.status === "done" ? "#d4edda" :
+                task.status === "blocked" ? "#f8d7da" : "#fff"};
+        ">
+            ${isLeader ? `<b>${task.target}</b>: ` : ""}
+
+            <div class="task-text">
+                ${task.text}
+            </div>
+
+            <div class="task-time">
+                🕒 ${new Date(task.time).toLocaleString()}
+            </div>
+
+            ${task.status === "pending" && !isLeader ? `
+                <div class="task-actions">
+                    <button class="btn done-btn" onclick="completeTask(${task.id})">
+                        ✅ Done
+                    </button>
+
+                    <button class="btn block-btn" onclick="blockTask(${task.id})">
+                        ❌ Not possible
+                    </button>
+                </div>
+            ` : ""}
+
+            ${task.status === "done" ? `
+                <div style="color:green;font-weight:bold;">
+                    ✔ Completed at ${doneTime}
+                </div>
+            ` : ""}
+
+            ${task.status === "blocked" ? `
+                <div style="color:red;font-weight:bold;">
+                    ❌ Not possible at ${blockedTime}<br/>
+                    <small>${task.reason}</small>
+                </div>
+            ` : ""}
+        </div>
+        `;
+    }).join("");
+}
+
+// COMPLETE TASK
+function completeTask(id) {
+    socket.emit("completeTask", id);
+}
+function blockTask(id) {
+    const reason = prompt("Why is this task not possible?");
+
+    if (!reason) return;
+
+    socket.emit("blockTask", {
+        id,
+        reason
+    });
+}
+// LEAVE
+function leave() {
+    const confirmLeave = confirm("Are you sure you want to leave?");
+    if (!confirmLeave) return;
+    socket.emit("disconnectUser", currentUser);
+    location.reload();
+}
+function sendInstruction() {
+    const input = document.getElementById("leaderInput");
+    const msg = input.value;
+
+    if (!msg.trim()) return;
+
+    socket.emit("leaderMessage", msg);
+
+    input.value = "";
+}
+function renderLeaderMessages() {
+    const container = document.getElementById("leaderMessages");
+
+    container.innerHTML = leaderMessages.map(msg => {
+        const time = new Date(msg.time);
+
+        const formattedTime = time.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
         });
 
         return `
-            <div class="task-card">
-                <div class="task-text">📌 ${task.text}</div>
-                <div class="task-time">${time}</div>
+            <div class="leader-message-item">
+                <div class="msg-text">👨‍💼 ${msg.text}</div>
+                <div class="msg-time">${formattedTime}</div>
             </div>
         `;
     }).join("");
 }
+function updateLocation(name, location) {
+    socket.emit("updateLocation", { name, location });
+}
+
+function openChat(user) {
+    currentChatUser = user;
+
+    // ✅ reset unread
+    unread[user] = 0;
+
+    document.getElementById("chatBox").style.display = "block";
+    document.getElementById("chatTitle").innerText =
+        "Chat with " + user;
+
+    render(); // refresh UI
+    renderChat();
+}
+function sendMessage() {
+    const input = document.getElementById("chatInput");
+    const text = input.value;
+
+    if (!text.trim()) return;
+
+    socket.emit("privateMessage", {
+        to: currentChatUser,
+        text
+    });
+
+    input.value = "";
+}
+function renderChat() {
+    const container = document.getElementById("chatMessages");
+
+    const messages = chats[currentChatUser] || [];
+
+    container.innerHTML = messages.map(m => `
+        <div style="
+            text-align:${m.from === currentUser ? "right" : "left"};
+            margin:5px;
+        ">
+            <span style="
+                background:${m.from === currentUser ? "#4a6cf7" : "#eee"};
+                color:${m.from === currentUser ? "white" : "black"};
+                padding:6px 10px;
+                border-radius:10px;
+                display:inline-block;
+            ">
+                ${m.text}
+            </span>
+        </div>
+    `).join("");
+    const box = document.getElementById("chatMessages");
+    box.scrollTop = box.scrollHeight;
+}
+function toggleChatList() {
+    openChat("casper");
+}
+window.addEventListener("load", () => {
+    if ("Notification" in window) {
+        Notification.requestPermission();
+    }
+});

@@ -1,215 +1,169 @@
+/* ===== GLOBAL ===== */
 body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f9;
+    font-family: "Segoe UI", sans-serif;
     margin: 0;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
 }
 
-/* HEADER */
+/* ===== HEADER ===== */
 .header {
-    background: #1e2a38;
     color: white;
     padding: 20px;
     text-align: center;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: bold;
+    backdrop-filter: blur(10px);
 }
 
-/* LOGIN */
+/* ===== LOGIN PAGE ===== */
 #login {
-    text-align: center;
-    margin-top: 100px;
-}
-
-#login select,
-#login button {
-    padding: 10px;
-    margin: 10px;
-}
-
-/* LEADER PANEL */
-#leaderPanel {
-    background: #1e2a38;
-    color: white;
-    padding: 15px;
-    text-align: center;
-}
-
-#leaderInput {
-    padding: 8px;
-    width: 250px;
-    border-radius: 6px;
-    border: none;
-}
-
-#leaderPanel button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 6px;
-    background: #28a745;
-    color: white;
-    cursor: pointer;
-}
-
-#leaderMessage {
-    margin-top: 10px;
-    background: #ffc107;
-    color: black;
-    padding: 8px;
-    border-radius: 6px;
-    font-weight: bold;
-}
-
-/* OVERVIEW */
-.overview {
+    height: 100vh;
     display: flex;
     justify-content: center;
-    gap: 15px;
-    padding: 15px;
+    align-items: center;
+
+    background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
-.box {
-    padding: 10px 20px;
-    border-radius: 10px;
-    color: white;
-    font-weight: bold;
-}
-
-.available {
-    background: #28a745;
-}
-
-.focused {
-    background: #ffc107;
-    color: black;
-}
-
-.busy {
-    background: #dc3545;
-}
-
-/* GRID */
-#dashboard {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    padding: 20px;
-}
-
-/* CARD */
-.card {
+/* ===== LOGIN CARD ===== */
+.login-card {
     background: white;
-    border-radius: 12px;
-    padding: 15px;
+    padding: 30px 25px;
+    border-radius: 18px;
+    width: 300px;
     text-align: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.5s ease;
 }
 
-/* STATUS BADGE */
-.status {
-    display: inline-block;
-    padding: 6px 10px;
-    border-radius: 6px;
-    margin: 8px 0;
-    font-weight: bold;
+/* title */
+.login-card h2 {
+    margin-bottom: 5px;
 }
 
-.status-available {
-    background: #28a745;
-    color: white;
-}
-
-.status-busy {
-    background: #dc3545;
-    color: white;
-}
-
-.status-focused {
-    background: #ffc107;
-    color: black;
-}
-
-.status-in-meeting {
-    background: #007bff;
-    color: white;
-}
-
-/* NOTE */
-.note {
+/* subtitle */
+.subtitle {
     font-size: 13px;
-    color: #555;
-    margin: 8px 0;
+    color: #777;
+    margin-bottom: 20px;
 }
 
-/* INPUT + SELECT */
-select,
-input {
-    width: 90%;
-    padding: 6px;
-    margin-top: 6px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
-/* BUTTONS */
-button {
-    margin-top: 6px;
-    padding: 6px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-button:hover {
-    opacity: 0.85;
-}
-
-#leaderMessage {
-    margin: 10px;
+/* select */
+.login-card select {
+    width: 100%;
     padding: 10px;
-    background: #ffc107;
-    border-radius: 8px;
-    text-align: center;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+/* button */
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+
+    background: linear-gradient(135deg, #4a6cf7, #6f8cff);
+    color: white;
     font-weight: bold;
+
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .leave-btn {
-    float: right;
-    background: #dc3545;
+    position: absolute;
+    right: 20px;
+    top: 15px;
+
+    background: linear-gradient(135deg, #ff4d4d, #c82333);
     color: white;
+
     border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
+    padding: 8px 16px;
+    border-radius: 25px;
+
+    font-size: 13px;
+    font-weight: 600;
+
     cursor: pointer;
-    margin-top: -5px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.25s ease;
 }
 
 .leave-btn:hover {
-    background: #b52a37;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
+.leave-btn:active {
+    transform: scale(0.95);
+}
+
+/* ===== GRID ===== */
+#dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* ===== CARD (GLASS EFFECT) ===== */
 .card {
-    background: white;
-    border-radius: 16px;
-    padding: 15px;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 18px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    color: white;
     transition: 0.3s;
+    position: relative;
 }
 
 .card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px) scale(1.02);
 }
 
+/* highlight your card */
+.card.me {
+    border: 2px solid #00ffcc;
+    box-shadow: 0 0 20px rgba(0, 255, 200, 0.5);
+}
+
+/* ===== HEADER ===== */
 .user-header {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
+/* ===== AVATAR ===== */
 .avatar {
-    width: 70px;
-    height: 70px;
+    width: 55px;
+    height: 55px;
     position: relative;
 }
 
@@ -218,169 +172,322 @@ button:hover {
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
+
+    /* modern border + shadow */
+    border: 2px solid white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
+/* ===== NAME ===== */
+.user-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+/* ===== STATUS ===== */
+
+
+/* colorful status pills */
+.status {
+    margin-top: 4px;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    font-weight: 600;
+}
+
+/* colors */
+.status-available {
+    background: #e6f7ed;
+    color: #28a745;
+}
+
+.status-busy {
+    background: #ffe6e6;
+    color: #dc3545;
+}
+
+.status-focused {
+    background: #fff4e0;
+    color: #d39e00;
+}
+
+.status-in-meeting {
+    background: #e6f0ff;
+    color: #007bff;
+}
+
+/* ===== NOTE ===== */
+.note-box {
+    margin-top: 12px;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* ===== INPUT ===== */
+.card input,
+.card select {
+    margin-top: 10px;
+    width: 100%;
+    padding: 8px;
+    border-radius: 10px;
+    border: none;
+}
+
+/* ===== BUTTONS ===== */
+.actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.actions button {
+    flex: 1;
+    padding: 8px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.help {
+    background: #ffd166;
+}
+
+.urgent {
+    background: #ff4d4d;
+    color: white;
+}
+
+/* ===== TASK ===== */
+.task-mini {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px;
+    border-radius: 8px;
+    margin-top: 6px;
+    font-size: 12px;
+}
+
+/* ===== YOU BADGE ===== */
+.you-badge {
+    font-size: 10px;
+    background: #00ffcc;
+    color: black;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-left: 6px;
+}
+
+/* ===== LEADER PANEL ===== */
+#leaderPanel {
+    background: white;
+    margin: 20px;
+    padding: 18px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* title */
+#leaderPanel h3 {
+    margin-bottom: 12px;
+    color: #333;
+}
+
+/* layout rows */
+.leader-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* inputs */
+#leaderPanel input,
+#leaderPanel select {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    outline: none;
+    transition: 0.2s;
+}
+
+/* focus effect */
+#leaderPanel input:focus,
+#leaderPanel select:focus {
+    border-color: #4a6cf7;
+    box-shadow: 0 0 6px rgba(74, 108, 247, 0.3);
+}
+
+/* buttons */
+#leaderPanel button {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+/* send button */
+#leaderPanel button:first-of-type {
+    background: #4a6cf7;
+    color: white;
+}
+
+/* assign button */
+#leaderPanel button:last-of-type {
+    background: #28a745;
+    color: white;
+}
+
+/* hover */
+#leaderPanel button:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* ===== OVERVIEW CONTAINER ===== */
+.overview {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* ===== STATUS CARD ===== */
+.box {
+    min-width: 120px;
+    padding: 15px;
+    border-radius: 16px;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transition: 0.3s;
+}
+
+/* hover effect */
+.box:hover {
+    transform: translateY(-5px) scale(1.03);
+}
+
+/* number */
+.box b {
+    display: block;
+    font-size: 26px;
+    margin-bottom: 5px;
+}
+
+/* label */
+.box span {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+/* ===== COLORS ===== */
+.available {
+    background: linear-gradient(135deg, #28a745, #4ddc7a);
+}
+
+.busy {
+    background: linear-gradient(135deg, #dc3545, #ff6b6b);
+}
+
+.focused {
+    background: linear-gradient(135deg, #ffc107, #ffe066);
+    color: black;
+}
+
+/* subtle glow */
+.available::after,
+.busy::after,
+.focused::after {
+    content: "";
+    position: absolute;
+    width: 120%;
+    height: 120%;
+    top: -10%;
+    left: -10%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(25deg);
+}
+
+.box b {
+    animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(0.8);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ===== AVATAR UPGRADE ===== */
+
+
+
+
+/* online indicator */
 .dot {
     width: 12px;
     height: 12px;
     border-radius: 50%;
     position: absolute;
-    bottom: 5px;
-    right: 5px;
+    bottom: 3px;
+    right: 3px;
     border: 2px solid white;
 }
 
 .online {
-    background: green;
+    background: #28a745;
 }
 
 .offline {
     background: gray;
 }
 
-.note-box {
-    background: #f4f6f9;
-    padding: 10px;
-    border-radius: 10px;
-    font-size: 14px;
-    color: #333;
-    margin: 10px 0;
-    min-height: 40px;
-}
-
-.leave-btn {
-    background: linear-gradient(135deg, #ff4d4d, #c82333);
-    color: white;
-    border: none;
-    padding: 8px 14px;
+/* ===== STATUS BADGE ===== */
+.status {
+    display: inline-block;
+    padding: 6px 14px;
     border-radius: 20px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-.leave-btn:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
-}
-
-.actions {
-    margin-top: 8px;
-}
-
-.help {
-    background: #ffc107;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 8px;
-    margin-right: 5px;
-}
-
-.urgent {
-    background: #dc3545;
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 8px;
-}
-
-input {
-    width: 90%;
-    padding: 8px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    margin-top: 6px;
-}
-
-.leader-messages {
-    margin-top: 10px;
-    max-height: 150px;
-    overflow-y: auto;
-}
-
-.leader-message-item {
-    background: #ffc107;
-    padding: 6px;
-    margin-bottom: 5px;
-    border-radius: 6px;
-    font-size: 14px;
-}
-
-#leaderMessages {
-    max-height: 300px;
-    overflow-y: auto;
-    padding: 10px;
-}
-
-.date-label {
-    text-align: center;
-    font-size: 12px;
-    color: #888;
     margin: 10px 0;
+    font-size: 13px;
     font-weight: bold;
 }
 
-/* Inputs */
-input,
-select {
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    outline: none;
-    width: 200px;
+/* styles */
+.status-available {
+    background: #e6f7ed;
+    color: #28a745;
 }
 
-/* Buttons */
-button {
-    padding: 10px 14px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background: #4a6cf7;
-    color: white;
-    transition: 0.2s;
+.status-busy {
+    background: #ffe6e6;
+    color: #dc3545;
 }
 
-button:hover {
-    background: #3654d1;
+.status-focused {
+    background: #fff4e0;
+    color: #d39e00;
 }
 
-/* Leader panel box */
-#leaderPanel {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 15px;
+.status-in-meeting {
+    background: #e6f0ff;
+    color: #007bff;
 }
 
-/* Task card */
-.task-card {
-    background: white;
-    border: 1px solid #eee;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 10px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.task-text {
-    font-weight: bold;
-}
-
-.task-time {
-    font-size: 12px;
-    color: gray;
-}
-
-.card.me {
-    border: 2px solid #4a6cf7;
-    background: #eef3ff;
-}
-
-.card.other {
-    opacity: 0.85;
+.user-info h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
 }
 
 .you-badge {
@@ -392,9 +499,226 @@ button:hover {
     margin-left: 6px;
 }
 
-.card.other select,
-.card.other input,
-.card.other button {
-    pointer-events: none;
-    opacity: 0.6;
+.location-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: 5px;
+    background: #eee;
+}
+
+.location-badge {
+    background: #e6f0ff;
+    color: #007bff;
+}
+
+.leader-message-item {
+    background: #fff3cd;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.msg-text {
+    font-weight: 500;
+}
+
+.msg-time {
+    font-size: 12px;
+    color: #666;
+}
+
+.card-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+}
+
+.chat-btn {
+    background: #4a6cf7;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.chat-btn:hover {
+    background: #3654d1;
+    transform: scale(1.05);
+}
+
+.chat-box {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 320px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    display: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+/* HEADER */
+.chat-header {
+    background: #4a6cf7;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* MESSAGES */
+.chat-messages {
+    height: 220px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #f4f6f9;
+}
+
+/* INPUT */
+.chat-input {
+    display: flex;
+    border-top: 1px solid #ddd;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 8px;
+    border: none;
+}
+
+.chat-input button {
+    background: #4a6cf7;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.badge {
+    background: red;
+    color: white;
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 50%;
+    margin-left: 6px;
+
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.task-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* ✅ DONE BUTTON */
+.done-btn {
+    background: #28a745;
+    color: white;
+}
+
+.done-btn:hover {
+    background: #218838;
+    transform: scale(1.05);
+}
+
+/* ❌ BLOCK BUTTON */
+.block-btn {
+    background: #c94a4a;
+    color: white;
+}
+
+.block-btn:hover {
+    background: #a63b3b;
+}
+
+/* optional: subtle press effect */
+.btn:active {
+    transform: scale(0.95);
+}
+
+.task-text {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.task-time {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+#chatToggle {
+    position: relative;
+    background: linear-gradient(135deg, #4a6cf7, #6a8dff);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+/* Hover effect */
+#chatToggle:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(74, 108, 247, 0.3);
+}
+
+/* Click effect */
+#chatToggle:active {
+    transform: scale(0.97);
+}
+
+/* 🔴 Badge */
+.badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #ff3b3b;
+    color: white;
+    border-radius: 50%;
+    padding: 3px 7px;
+    font-size: 11px;
+    font-weight: bold;
 }
