@@ -119,10 +119,17 @@ function render() {
         ).join("")}
         </select>
 
-        <div class="actions">
-            <button onclick="updateLocation('${p.name}','On-site')">🏢</button>
-            <button onclick="updateLocation('${p.name}','Remote')">🏠</button>
-        </div>
+       <div class="actions">
+    <button class="location-btn onsite"
+        onclick="updateLocation('${p.name}','On-site')">
+        🏢
+    </button>
+
+    <button class="location-btn remote"
+        onclick="updateLocation('${p.name}','Remote')">
+        🏠
+    </button>
+</div>
     ` : ""}
 `;
 

@@ -238,8 +238,40 @@ body {
 /* ===== BUTTONS ===== */
 .actions {
     display: flex;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+/* base style */
+.location-btn {
+    font-size: 22px;
+    /* 🔥 bigger icon */
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+/* 🏢 On-site */
+.location-btn.onsite {
+    background: #e3f2fd;
+}
+
+.location-btn.onsite:hover {
+    background: #bbdefb;
+    transform: scale(1.1);
+}
+
+/* 🏠 Remote */
+.location-btn.remote {
+    background: #fff3cd;
+}
+
+.location-btn.remote:hover {
+    background: #ffe69c;
+    transform: scale(1.1);
 }
 
 .actions button {
