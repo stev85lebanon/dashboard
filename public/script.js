@@ -97,8 +97,13 @@ function render() {
     </div>
 
     <div class="location-badge">
-        ${p.location === "Remote" ? "🏠 Remote" : "🏢 On-site"}
-    </div>
+    <span class="location-icon">
+        ${p.location === "Remote" ? "🏠" : "🏢"}
+    </span>
+    <span class="location-text">
+        ${p.location === "Remote" ? "Remote" : "On-site"}
+    </span>
+</div>
 
     <div class="note-box">
         ${p.note || "No update"}
