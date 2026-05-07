@@ -1,176 +1,51 @@
-require("dotenv").config();
+// LEAVE MANUALLY
+socket.on("disconnectUser", async (name) => {
 
-const express = require("express");
-const http = require("http");
-const mongoose = require("mongoose");
-const { Server } = require("socket.io");
-const cors = require("cors");
+    // remove from mongodb
+    await User.deleteOne({
+        name: new RegExp("^" + name + "$", "i")
+    });
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-app.use(express.static("public"));
+    // remove from online users
+    delete onlineUsers[name.toLowerCase()];
 
-const server = http.createServer(app);
-const io = new Server(server);
+    // ✅ clear tasks if nobody online
+    if (Object.keys(onlineUsers).length === 0) {
+        tasks = [];
+        taskId = 0;
 
-// MongoDB (local or Atlas)
-// mongoose.connect("mongodb://127.0.0.1:27017/dashboard");
-mongoose.connect(process.env.MONGO_URI);
+        console.log("All users left → tasks cleared");
+    }
 
-const UserSchema = new mongoose.Schema({
-    name: String,
-    status: String,
-    note: String,
-    role: String,
-    avatar: String,
-    location: { type: String, default: "On-site" } // ✅ ADD THIS
-
+    // refresh all clients
+    io.emit("refresh", await User.find());
+    io.emit("taskUpdate", tasks);
 });
 
-const User = mongoose.model("User", UserSchema);
 
-// ✅ store online users
-const onlineUsers = {};
+// AUTO DISCONNECT (tab close / internet lost / refresh)
+socket.on("disconnect", async () => {
 
-// ✅ store tasks
-let tasks = [];
-let taskId = 0;
+    if (socket.userName) {
 
-io.on("connection", async (socket) => {
-    console.log("User connected");
+        // remove from online users
+        delete onlineUsers[socket.userName];
 
-    socket.emit("init", await User.find());
-    socket.emit("taskUpdate", tasks); // send tasks on connect
-
-    // LOGIN
-    socket.on("login", async (data) => {
-        const key = data.name.toLowerCase();
-        socket.userName = key;
-        onlineUsers[key] = socket.id;
-
-        const avatars = {
-            amir: "/images/amir.jpg",
-            casper: "/images/casper.jpg",
-            john: "/images/john.jpg",
-            lina: "/images/lina.jpg",
-            mustafa: "/images/mustafa.jpg",
-            sara: "/images/sara.jpg",
-            yasin: "/images/yasin.jpg"
-        };
-
-        const avatar = avatars[key] || "/images/default.png";
-
-        const displayName =
-            data.name.charAt(0).toUpperCase() +
-            data.name.slice(1).toLowerCase();
-
-        let user = await User.findOne({ name: displayName });
-
-        if (!user) {
-            await User.create({
-                name: displayName,
-                status: "Available",
-                note: "",
-                role: data.role,
-                avatar
-            });
-        } else {
-            user.role = data.role;
-            user.avatar = avatar;
-            await user.save();
-        }
-
-        io.emit("refresh", await User.find());
-    });
-
-    // STATUS
-    socket.on("updateStatus", async (data) => {
-        await User.findOneAndUpdate(
-            { name: data.name },
-            { status: data.status }
-        );
-        io.emit("refresh", await User.find());
-    });
-
-    // NOTE
-    socket.on("updateNote", async (data) => {
-        await User.findOneAndUpdate(
-            { name: data.name },
-            { note: data.note }
-        );
-        io.emit("refresh", await User.find());
-    });
-
-    // LEADER MESSAGE
-    socket.on("leaderMessage", (msg) => {
-        io.emit("leaderMessage", {
-            text: msg,
-            time: new Date()
-        });
-    });
-
-    // ✅ ASSIGN TASK (NEW)
-    socket.on("assignTask", ({ text, target }) => {
-        const task = {
-            id: taskId++,
-            text,
-            target, // lowercase
-            done: false,
-            time: new Date()
-        };
-
-        tasks.unshift(task);
-
-        io.emit("taskUpdate", tasks); // send to everyone
-    });
-
-    // ✅ COMPLETE TASK
-    socket.on("completeTask", (id) => {
-        tasks = tasks.map(t =>
-            t.id === id ? { ...t, done: true } : t
-        );
-
-        io.emit("taskUpdate", tasks);
-    });
-
-    // LEAVE
-    socket.on("disconnectUser", async (name) => {
+        // remove from mongodb
         await User.deleteOne({
-            name: new RegExp("^" + name + "$", "i")
+            name: new RegExp("^" + socket.userName + "$", "i")
         });
 
-        delete onlineUsers[name.toLowerCase()];
-        io.emit("refresh", await User.find());
-    });
+        // ✅ clear tasks if nobody online
+        if (Object.keys(onlineUsers).length === 0) {
+            tasks = [];
+            taskId = 0;
 
-    socket.on("disconnect", async () => {
-        if (socket.userName) {
-            delete onlineUsers[socket.userName];
-
-            await User.deleteOne({
-                name: new RegExp("^" + socket.userName + "$", "i")
-            });
-
-            io.emit("refresh", await User.find());
+            console.log("All users disconnected → tasks cleared");
         }
-    });
 
-    socket.on("updateLocation", async ({ name, location }) => {
-        await User.findOneAndUpdate(
-            { name: new RegExp("^" + name + "$", "i") }, // ✅ case insensitive
-            { location }
-        );
-
+        // refresh all clients
         io.emit("refresh", await User.find());
-    });
-});
-
-// server.listen(3000, () => {
-//     console.log("Server running on port 3000");
-// });
-const PORT = process.env.PORT || 3000;
-
-server.listen(PORT, () => {
-    console.log("Server running on port " + PORT);
+        io.emit("taskUpdate", tasks);
+    }
 });
