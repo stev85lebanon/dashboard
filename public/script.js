@@ -194,29 +194,120 @@ function assignTask() {
 
 // RENDER TASKS
 function renderTasks() {
-    const container = document.getElementById("taskList");
+
+    const container =
+        document.getElementById("taskList");
 
     let visibleTasks = isLeader
         ? allTasks
-        : allTasks.filter(t => t.target === currentUser);
+        : allTasks.filter(
+            t => t.target === currentUser
+        );
 
-    container.innerHTML = visibleTasks.map(task => `
-        <div style="
-            padding:10px;
-            margin:6px;
-            border-radius:8px;
-            background:${task.done ? "#d4edda" : "#fff"};
+    container.innerHTML =
+        visibleTasks.map(task => {
+
+            const taskTime =
+                new Date(task.time)
+                    .toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    });
+
+            const completedTime =
+                task.completedAt
+                    ? new Date(task.completedAt)
+                        .toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit"
+                        })
+                    : "";
+
+            const blockedTime =
+                task.blockedAt
+                    ? new Date(task.blockedAt)
+                        .toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit"
+                        })
+                    : "";
+
+            return `
+        <div class="task-card
+            ${task.status === "done"
+                    ? "done-task"
+                    : ""}
+            ${task.status === "blocked"
+                    ? "blocked-task"
+                    : ""}
         ">
-            ${isLeader ? `<b>${task.target}</b>: ` : ""}
 
-            <input type="checkbox"
-                ${task.done ? "checked" : ""}
-                ${isLeader ? "disabled" : ""}
-                onchange="completeTask(${task.id})">
+            ${isLeader
+                    ? `
+                <div class="task-user">
+                    👤 ${task.target}
+                </div>
+            `
+                    : ""
+                }
 
-            ${task.text}
+            <div class="task-text">
+                ${task.text}
+            </div>
+
+            <div class="task-time">
+                🕒 ${taskTime}
+            </div>
+
+            ${task.status === "pending"
+                    && !isLeader
+                    ? `
+                <div class="task-actions">
+
+                    <button
+                        class="btn done-btn"
+                        onclick="completeTask(${task.id})"
+                    >
+                        ✅ Done
+                    </button>
+
+                    <button
+                        class="btn block-btn"
+                        onclick="blockTask(${task.id})"
+                    >
+                        ❌ Not possible
+                    </button>
+
+                </div>
+            `
+                    : ""
+                }
+
+            ${task.status === "done"
+                    ? `
+                <div class="task-status done-status">
+                    ✔ Completed at ${completedTime}
+                </div>
+            `
+                    : ""
+                }
+
+            ${task.status === "blocked"
+                    ? `
+                <div class="task-status blocked-status">
+                    ❌ Not possible at ${blockedTime}
+
+                    <div class="blocked-reason">
+                        ${task.reason}
+                    </div>
+                </div>
+            `
+                    : ""
+                }
+
         </div>
-    `).join("");
+        `;
+        }).join("");
 }
 
 // COMPLETE TASK

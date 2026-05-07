@@ -24,9 +24,17 @@ const io = new Server(server, {
 // MONGODB
 // ======================
 
+// FOR LOCAL TESTING
+// mongoose.connect("mongodb://127.0.0.1:27017/dashboard")
+//     .then(() => console.log("MongoDB connected"))
+//     .catch(err => console.log(err));
+
+
+// FOR RENDER + ATLAS
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("MongoDB connected"))
     .catch(err => console.log(err));
+
 
 // ======================
 // USER MODEL
@@ -63,8 +71,12 @@ io.on("connection", async (socket) => {
 
     console.log("User connected");
 
+    // ======================
     // SEND INITIAL DATA
+    // ======================
+
     socket.emit("init", await User.find());
+
     socket.emit("taskUpdate", tasks);
 
     // ======================
@@ -202,10 +214,22 @@ io.on("connection", async (socket) => {
     // ======================
     // COMPLETE TASK
     // ======================
+    // ======================
+    // COMPLETE TASK
+    // ======================
 
     socket.on("completeTask", (id) => {
 
-        tasks = tasks.filter(t => t.id !== id);
+        tasks = tasks.map(t =>
+
+            t.id === id
+                ? {
+                    ...t,
+                    status: "done",
+                    completedAt: new Date()
+                }
+                : t
+        );
 
         io.emit("taskUpdate", tasks);
     });
@@ -216,12 +240,22 @@ io.on("connection", async (socket) => {
 
     socket.on("blockTask", ({ id, reason }) => {
 
-        tasks = tasks.filter(t => t.id !== id);
-
-        io.emit("taskUpdate", tasks);
-
         const blockedTask =
             tasks.find(t => t.id === id);
+
+        tasks = tasks.map(t =>
+
+            t.id === id
+                ? {
+                    ...t,
+                    status: "blocked",
+                    reason,
+                    blockedAt: new Date()
+                }
+                : t
+        );
+
+        io.emit("taskUpdate", tasks);
 
         if (blockedTask) {
 
@@ -257,20 +291,24 @@ io.on("connection", async (socket) => {
             time: new Date()
         };
 
-        // send to receiver
+        // SEND TO RECEIVER
         if (targetSocket) {
+
             io.to(targetSocket).emit(
                 "privateMessage",
                 message
             );
         }
 
-        // send back to sender
-        socket.emit("privateMessage", message);
+        // SEND BACK TO SENDER
+        socket.emit(
+            "privateMessage",
+            message
+        );
     });
 
     // ======================
-    // USER LEAVE
+    // USER LEAVE BUTTON
     // ======================
 
     socket.on("disconnectUser", async (name) => {
@@ -279,16 +317,23 @@ io.on("connection", async (socket) => {
             name: new RegExp("^" + name + "$", "i")
         });
 
-        delete onlineUsers[name.toLowerCase()];
+        delete onlineUsers[
+            name.toLowerCase()
+        ];
 
         // REMOVE USER TASKS
         tasks = tasks.filter(
-            t => t.target !== name.toLowerCase()
+            t =>
+                t.target !==
+                name.toLowerCase()
         );
 
         io.emit("taskUpdate", tasks);
 
-        io.emit("refresh", await User.find());
+        io.emit(
+            "refresh",
+            await User.find()
+        );
     });
 
     // ======================
@@ -299,23 +344,23 @@ io.on("connection", async (socket) => {
 
         if (socket.userName) {
 
-            delete onlineUsers[socket.userName];
+            delete onlineUsers[
+                socket.userName
+            ];
 
             await User.deleteOne({
                 name: new RegExp(
-                    "^" + socket.userName + "$",
+                    "^" +
+                    socket.userName +
+                    "$",
                     "i"
                 )
             });
 
-            // REMOVE USER TASKS
-            tasks = tasks.filter(
-                t => t.target !== socket.userName
+            io.emit(
+                "refresh",
+                await User.find()
             );
-
-            io.emit("taskUpdate", tasks);
-
-            io.emit("refresh", await User.find());
         }
 
         console.log("User disconnected");
@@ -327,12 +372,20 @@ io.on("connection", async (socket) => {
 // SERVER
 // ======================
 
-const PORT = process.env.PORT || 3000;
+// LOCAL
+// const PORT = 3000;
+
+
+// RENDER
+const PORT =
+    process.env.PORT || 3000;
+
 
 server.listen(PORT, () => {
 
     console.log(
-        "Server running on port " + PORT
+        "Server running on port " +
+        PORT
     );
 
 });
